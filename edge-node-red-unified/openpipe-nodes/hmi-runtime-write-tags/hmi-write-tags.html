@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    RED.nodes.registerType('hmi-write-tags',{
+        category: 'OpenPipe',
+        color: '#009999',
+        defaults: {
+            nodename: {value:""}
+        },
+        inputs:1,
+        outputs:0,
+        icon: "inject.png",
+        label: function() {
+            return this.name||"hmi-write-tags";
+        },
+        paletteLabel: "WriteTags"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="hmi-write-tags">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="hmi-write-tags">
+    <p>A node to write Runtime Tags on Simatic Unified Comfort Panel.</p>
+    <p>Input JSON payload is an array of objects with [{ "Name" : "tag_name1", "Value": value}, { "Name" : "tag_name2", "Value": value}].</p>
+</script>

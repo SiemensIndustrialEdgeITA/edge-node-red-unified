@@ -1,0 +1,39 @@
+<script type="text/javascript">
+    RED.nodes.registerType('hmi-subscribe-tags',{
+        category: 'OpenPipe',
+        color: '#009999',
+        defaults: {
+            nodename: {value:""},
+            tags: {value:""}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "arrow-in.png",
+        label: function() {
+            return this.name||"hmi-subscribe-tags";
+        },
+        paletteLabel: "SubscribeTags"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="hmi-subscribe-tags">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+
+    </div>
+    <div class="form-row">
+        <label for="node-input-tags"><i class="icon-tag"></i> Tags</label>
+        <input type="text" id="node-input-tags" placeholder="tag1 tag2 ...">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="hmi-subscribe-tags">
+    <p>A node to subscribe Runtime Tags on Simatic Unified Comfort Panel.</p>
+    <p>Define a tag or several tags for subscription e.g. "Tags = tag1 tag2 tag3"</p>
+    <p>The "SubscribeTag" command subscribes one or more tags for monitoring. The following properties are monitored: Tag value, Quality, Quality code and Time stamp.</p>
+    <p>"NotifiySubscribeTag" always returns all monitored tags, even if only the value of one monitored tag changes.</p>
+    <p>The change can be a change to the quality code, time stamp or tag value.</p>
+    <p>The order of tags in the response corresponds to the order in the "SubscribeTag" request.</p>
+</script>

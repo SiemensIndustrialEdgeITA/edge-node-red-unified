@@ -1,0 +1,33 @@
+version: "2.4"
+
+services:
+  edge-node-red-unified:
+    container_name: edge-node-red-unified
+    build:
+      context: ./edge-node-red-unified
+      dockerfile: Dockerfile
+      args:
+        - NODE_RED_VERSION=1.2.9
+    image: edge-node-red-unified:1.2.9
+    restart: always
+    #privileged: true
+    cap_add:
+      - SYS_ADMIN
+      #- DAC_READ_SEARCH
+      - ALL
+    environment:
+      - TZ=Europe/Rome
+    ports:
+      - "41880:1880"
+      - "44840:44840"
+    networks:
+      - proxy-redirect
+    volumes:
+      - edge-node-red-data:/data/
+    mem_limit: 768m
+
+volumes:
+  edge-node-red-data:
+
+networks:
+  proxy-redirect:

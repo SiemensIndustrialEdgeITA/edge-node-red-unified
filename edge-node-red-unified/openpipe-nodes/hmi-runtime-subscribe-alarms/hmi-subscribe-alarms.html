@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    RED.nodes.registerType('hmi-subscribe-alarms',{
+        category: 'OpenPipe',
+        color: '#009999',
+        defaults: {
+            nodename: {value:""}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "arrow-in.png",
+        label: function() {
+            return this.name||"hmi-subscribe-alarms";
+        },
+        paletteLabel: "SubscribeAlarms"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="hmi-subscribe-alarms">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="hmi-subscribe-alarms">
+    <p>A node to subscribe Runtime Alarms on Simatic Unified Comfort Panel</p>
+    <p>The "SubscribeAlarm" command subscribes systems for monitoring of changes of active alarms</p>
+    <p>During the first call of "NotifySubscribeAlarm", all active alarms are queried. Thereafter, "NotifySubscribeAlarm" is only called when the status of an alarm changes</p>
+</script>

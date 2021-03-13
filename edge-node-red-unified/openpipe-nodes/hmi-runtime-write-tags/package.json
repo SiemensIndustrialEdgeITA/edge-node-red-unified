@@ -1,0 +1,9 @@
+{
+    "version" : "0.0.1",
+    "name" : "node-red-hmi-write-tags",
+    "node-red" : {
+        "nodes": {
+            "hmi-rt-write-tags": "hmi-write-tags.js"
+        }
+    }
+}

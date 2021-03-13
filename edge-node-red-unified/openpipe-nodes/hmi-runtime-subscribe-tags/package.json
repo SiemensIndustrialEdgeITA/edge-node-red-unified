@@ -1,0 +1,9 @@
+{
+    "version" : "0.0.1",
+    "name" : "node-red-hmi-subscribe-tags",
+    "node-red" : {
+        "nodes": {
+            "hmi-rt-read-tags": "hmi-subscribe-tags.js"
+        }
+    }
+}
