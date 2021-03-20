@@ -8,6 +8,7 @@ Node-RED Docker Application for UNIFIED COMFORT PANELS with some of most used No
   - [Table of Contents](#table-of-contents)
   - [Install the App](#install-the-app)
     - [Requirements](#requirements)
+    - [Download the App](#download-the-app)
     - [Prerequisites](#prerequisites)
     - [Load App on Unified Comfort Panels](#load-app-on-unified-comfort-panels)
   - [Run the App](#run-the-app)
@@ -37,8 +38,14 @@ In order to run this Edge App, the selected Edge System need to satisfy the foll
 
 | Description                    |           |
 |--------------------------------|-----------|
-| Available Working Memory (RAM) | >= 300 MB |
+| Available Working Memory (RAM) | >= 768 MB |
 |                                |           |
+
+### Download the App
+
+The **edge-node-red-unified** app can be downloaded in .app format using this secure Google Drive link:
+
+- [edge-node-red-unified_0.0.12.app](https://drive.google.com/file/d/15ZNUkBQPU9AJps4drQRearr5CAEyU3GM/view?usp=sharing)
 
 ### Prerequisites
 
@@ -49,9 +56,8 @@ In order to run this Edge App, the selected Edge System need to satisfy the foll
 
 1. Copy the downloaded ```edge-node-red-unified_x.x.x.app``` file to your Developer PC.
 2. Open the Industrial Edge Management Web Page of UCP on ```https://<ucp-address>```
-3. Connect it both to your Docker engine and to IEM
-4. Import the .app file using the *Import Offline* button
-5. Wait until App is installed
+3. Import the .app file using the *Import Offline* button
+4. Wait until App is installed
 
 ## Run the App
 
@@ -60,19 +66,26 @@ Once the app has been installed the Docker service starts running immediately.
 You can access the app web interface by clicking on the *edge-node-red-unified* app icon in Edge Device Web Page or through endpoint.
 The app has two HTTPS Endpoints configured with SIMATIC Edge Reverse Proxy function:
 
-* ```https://<ied-address>/edge-node-red``` : this endpoint open the Node-RED editor interface.
-* ```https://<ied-address>/edge-node-red-ui``` : this endpoint open the Node-RED Web Dashboard.
+- ```https://<ied-address>/edge-node-red``` : this endpoint open the Node-RED editor interface. This is the default endpoint.
+- ```https://<ied-address>/edge-node-red-ui``` : this endpoint open the Node-RED Web Dashboard.
+
+To open the Node-RED editor a user must be logged.Below the default Login credentials:
+
+- **user:** edge
+- **password:** edge
+
+![node-red-login](docs/node-red-login.png)
 
 > A user must be logged on Edge Device in order to open Reverse Proxy App endpoints. If no user is logged the endpoint URL will give Error 503 on load.
 
 If you need, is it possible to access the app Endpoints also by using the following direct URLs with mapped ports:
 
-* ```https://<ied-address>:41880``` : this endpoint open the Node-RED editor interface.
-* ```https://<ied-address>:41880/ui``` : this endpoint open the Node-RED Web Dashboard.
+- ```https://<ied-address>:41880``` : this endpoint open the Node-RED editor interface.
+- ```https://<ied-address>:41880/edge-node-red-ui``` : this endpoint open the Node-RED Web Dashboard.
 
 ## Extra Mapped Port for Additional Services
 
-There is also an additional Port mapped through the docker-compose.yml file that is the port **41890** that could be used for extra services and features that require a dedicated port like e.g. exposure of an OPCUA Server with ```node-red-contrib-opcua``` node.
+There is also an additional Port mapped through the docker-compose.yml file that is the port **44840** that could be used for extra services and features that require a dedicated port like e.g. exposure of an OPCUA Server with ```node-red-contrib-opcua``` node.
 
 ## WinCC Unified Communication with OpenPipe Nodes
 
@@ -81,7 +94,6 @@ The main reason why this app is specific for Unified Comfort Panels is that, amo
 The installed nodes use the **OpenPipe Socket** communication channel, which requires a dedicated volume in the Edge App.
 These nodes are contained in the ```openpipe_nodes``` folder copied in the Docker image building phase.
 For more information on how this feature was integrated, see chapter [How the App is built from scratch](#how-the-app-is-built-from-scratch).
-
 
 ## Extra nodes in package.json
 
@@ -95,25 +107,32 @@ The following snippets of ```package.json``` file lists all the extra nodes inst
   ...
   ...
     "dependencies": {
-        "node-red": "1.1.2",
-        "@mindconnect/node-red-contrib-mindconnect": "^3.8.1",
+        "node-red": "1.2.9",
+        "@mindconnect/node-red-contrib-mindconnect": "^3.10.0",
         "node-red-contrib-azureiothubnode": "^0.5.3",
-        "node-red-contrib-influxdb": "^0.4.1",
-        "node-red-contrib-mssql-plus": "^0.4.4",
+        "node-red-contrib-influxdb": "^0.5.4",
+        "node-red-contrib-mssql-plus": "^0.6.4",
         "node-red-node-mysql" : "0.1.1",
         "node-red-contrib-postgres-variable": "0.1.4",
-        "node-red-contrib-s7": "^2.2.1",
-        "node-red-contrib-opcua": "^0.2.72",
+        "node-red-contrib-s7": "^3.0.0",
+        "node-red-contrib-opcua": "^0.2.113",
         "node-red-contrib-modbus": "^5.13.3",
         "node-red-contrib-cip-ethernet-ip" : "^1.1.2",
-        "node-red-contrib-string": "^0.2.2",
-        "node-red-contrib-telegrambot": "^8.3.3",
-        "node-red-node-ping": "^0.2.1",
-        "node-red-contrib-moment": "^3.0.3",
-        "node-red-dashboard": "^2.23.0",
-        "node-red-hmi-rt-read-alarms": "file:hmi-runtime-read-alarms",
-        "node-red-hmi-rt-read-tags": "file:hmi-runtime-read-tags",
-        "node-red-hmi-rt-write-tags": "file:hmi-runtime-write-tags"
+        "node-red-contrib-string": "^1.0.0",
+        "node-red-contrib-telegrambot": "^8.10.0",
+        "node-red-node-ping": "^0.3.0",
+        "node-red-contrib-moment": "^4.0.0",
+        "node-red-dashboard": "^2.28.1",
+        "node-red-node-email": "^1.8.3",
+        "node-red-node-openweathermap": "^0.4.0",
+        "node-red-node-random": "^0.3.1",
+        "node-red-contrib-ui-led": "^0.4.9",
+        "node-red-node-ui-table": "^0.3.10",
+        "node-red-node-base64": "0.3.0",
+        "node-red-node-msgpack": "1.2.1",
+        "node-red-hmi-subscribe-alarms": "file:hmi-runtime-subscribe-alarms",
+        "node-red-hmi-subscribe-tags": "file:hmi-runtime-subscribe-tags",
+        "node-red-hmi-write-tags": "file:hmi-runtime-write-tags"
     }
 }
 ```
@@ -140,7 +159,7 @@ See the complete list of available Node-RED nodes for this App version on chapte
 The Node-RED Docker base image used in this App is built using [docker-compose](https://docs.docker.com/compose/) tool with the command ```docker-compose up -d --build``` on the following ```docker-compose.yml``` file:
 
 ```yaml
-version: "3.4"
+version: "2.4"
 
 services:
   edge-node-red-unified:
@@ -149,32 +168,42 @@ services:
       context: ./edge-node-red-unified
       dockerfile: Dockerfile
       args:
-        - NODE_RED_VERSION=1.1.2
-    image: edge-node-red-unified:1.1.2
+        - NODE_RED_VERSION=1.2.9
+    image: edge-node-red-unified:1.2.9
     restart: always
-    privileged: true
+    #privileged: true
+    cap_add:
+      - SYS_ADMIN
+      #- DAC_READ_SEARCH
+      - ALL
     environment:
       - TZ=Europe/Rome
     ports:
-      - "32880:1880"
-      - "32890:30890"
+      - "41880:1880"
+      - "44840:44840"
+    networks:
+      - proxy-redirect
     volumes:
-      - edge-node-red-data:/data
+      - edge-node-red-data:/data/
+    mem_limit: 768m
 
 volumes:
   edge-node-red-data:
+
+networks:
+  proxy-redirect:
 
 
 ```
 
 The above compose file:
 
-* creates the ```edge-node-red-unified``` service container
-* build our custom Node-RED Docker image using ```./edge-node-red-unified/Dockerfile``` file and passing to it the argument **1.1.2** as the wanted ```NODE_RED_VERSION``` to be installed
-* sets the timezone to ```Europe/Rome```
-* Maps the container port 1880 to the the host port **41880** (for Node-RED Web Interface)
-* Maps the container port 41890 to the the host port **41890** (for extra features like e.g. exposure of an OPCUA Server with ```node-red-contrib-opcua``` node.)
-* persists the ```/data``` dir inside the container to the```edge-node-red-data``` volume in the Host System.
+- creates the ```edge-node-red-unified``` service container
+- build our custom Node-RED Docker image using ```./edge-node-red-unified/Dockerfile``` file and passing to it the argument **1.2.9** as the wanted ```NODE_RED_VERSION``` to be installed
+- sets the timezone to ```Europe/Rome```
+- Maps the container port 1880 to the the host port **41880** (for Node-RED Web Interface)
+- Maps the container port 44840 to the the host port **44840** (for extra features like e.g. exposure of an OPCUA Server with ```node-red-contrib-opcua``` node.)
+- persists the ```/data``` dir inside the container to the```edge-node-red-data``` volume in the Host System.
 
 ### ```Dockerfile```
 
@@ -185,6 +214,13 @@ ARG NODE_RED_VERSION=latest
 ########################################################################################
 FROM nodered/node-red:${NODE_RED_VERSION}-minimal as BASE
 
+USER root
+
+# install needed packages
+RUN apk add --update-cache \
+        cifs-utils \
+    && rm -rf /var/cache/apk/*
+
 # Copy package.json to the WORKDIR so npm builds all
 # of your added nodes modules for Node-RED
 COPY package.json .
@@ -192,10 +228,14 @@ COPY package.json .
 # Copy OpenPipe Commmunication Nodes
 COPY openpipe-nodes/ .
 
+# copy custom settings and start script
+COPY settings.js .
+COPY start.sh .
+
 ########################################################################################
 FROM BASE as BUILD
 
-USER root
+#USER root
 
 # Install devtools for building new nodes on minimal image
 RUN apk add --no-cache --virtual buildtools build-base linux-headers udev python && \
@@ -205,17 +245,19 @@ RUN apk add --no-cache --virtual buildtools build-base linux-headers udev python
 ########################################################################################
 FROM BASE AS RELEASE
 
+USER node-red
+
 # copy builded node modules from BUILD
 COPY --from=BUILD /usr/src/node-red/node_modules ./node_modules
 
 # Clean up
 RUN rm -rf /tmp/*
 
-
-ENTRYPOINT ["npm", "start", "--cache", "/data/.npm", "--", "--userDir", "/data"]
+ENTRYPOINT ["/bin/sh", "start.sh"]
 ```  
 
 Taking the argument ```NODE_RED_VERSION``` passed by docker-compose file, docker start building process from node-red base image ```nodered/node-red:<NODE_RED_VERSION>-minimal``` and the new ```package.json``` file and ```openpipe-nodes``` nodes folder are copied to new docker image.
+User and ui endpoint are set up in the ```settings.js```file that is copied togheter in this build phase.
 The *minimal* version is used to reduce the amount of space of the ```RELEASE``` Docker Image as it not include all the linux build packages used for install new nodes.
 
 In the ```BUILD``` phase, the needed Linux packages for nodes installation are installed by ```apk add``` command, then all nodes are installed by ```npm install``` command.
@@ -227,55 +269,74 @@ The ```ENTRYPOINT``` command will start Node-RED using ```/data``` folder as roo
 
 By importing the ```docker-compose.yml``` file in the Edge App Publisher some changes are applied in order to make the app compatible with the SIMATIC Edge environment:
 
-* The ```build``` parameter is deleted since the image was already builded.
-* In the **Storage** Section of the imported App a new volume for USB Media Mounting was added by using the pre-configured option.
-* In the **Storage** Section of the imported App a new volume for WinCC Communication with Openpipe Socket was added by using the pre-configured option.
-* In the **Network** section of the imported App two Reverse Proxy endpoints was defined with following parameters:
+- The ```build``` parameter is deleted since the image was already builded.
+- In the **Storage** Section of the imported App a new volume for USB Media Mounting was added by using the pre-configured option.
+- In the **Storage** Section of the imported App a new volume for WinCC Communication with Openpipe Socket was added by using the pre-configured option.
 
-    |   Port    |   Type   |   Service Name    |   Rewrite Target  |
-    |-----------|----------|-------------------|-------------------|
-    |   1880    |   HTTP   |   edge-node-red   |   /               |
-    |   1880    |   HTTP   |  edge-node-red-ui |   /ui             |
-    |           |          |                   |                   |
+![publisher-reverse-proxy](docs/publisher-volumes.PNG)
 
-* The ```mem_limit``` parameter is added since is a mandatory field for SIMATIC Edge applications.
+- In the **Network** section of the imported App two Reverse Proxy endpoints was defined with following parameters:
+
+    |   Port    |   Type   |   Service Name    |   Rewrite Target      |
+    |-----------|----------|-------------------|-----------------------|
+    |   1880    |   HTTP   |   edge-node-red   |   /                   |
+    |   1880    |   HTTP   |  edge-node-red-ui |   /edge-node-red-ui   |
+    |           |          |                   |                       |
+
+![publisher-reverse-proxy](docs/publisher-reverse-proxy.PNG)
+
+- The ```mem_limit``` parameter is added since is a mandatory field for SIMATIC Edge applications.
 
 Below you can find the extracted ```docker-compose```  file from the Edge App:
 
+![publisher-service](docs/publisher-service.PNG)
+
 ```yaml
 version: '2.4'
+
 services:
   edge-node-red-unified:
     container_name: edge-node-red-unified
-    image: 'edge-node-red-unified:1.1.2'
-    restart: always
+    image: 'edge-node-red-unified:1.2.9'
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+      - ALL
     environment:
       - TZ=Europe/Rome
     ports:
       - '41880:1880'
-      - '41890:41890'
+      - '44840:44840'
+    networks:
+      - proxy-redirect
     volumes:
-      - 'edge-node-red-data:/data'
-      - '/tmp/siemens/automation:/tempcontainer/'
+      - 'edge-node-red-data:/data/'
       - '/media/simatic:/media/simatic:ro,slave'
-    mem_limit: 200mb
+      - '/tmp/siemens/automation:/tempcontainer/'
+    mem_limit: 768m
 
-  volumes:
-    edge-node-red-data: null
+networks:
+  proxy-redirect: null
 
+volumes:
+  edge-node-red-data: null
 ```
 
 ## References
 
-* [Node-RED Library](https://flows.nodered.org/) - Official Node-RED Collection of Nodes and Example Flows.
-* [Node-RED Docker Image](https://hub.docker.com/r/nodered/node-red) - Official Node-RED Docker Image from Docker Hub.
-* [Node-RED Documentation](https://nodered.org/docs/) - Node-RED Documentation Portal for every needs.
-* [OpenPipe Manual](https://support.industry.siemens.com/cs/it/en/view/109778823) - Siemens Industry Support Manual for OpenPipe Communication functions understanding.
+- [Node-RED Library](https://flows.nodered.org/) - Official Node-RED Collection of Nodes and Example Flows.
+- [Node-RED Docker Image](https://hub.docker.com/r/nodered/node-red) - Official Node-RED Docker Image from Docker Hub.
+- [Node-RED Documentation](https://nodered.org/docs/) - Node-RED Documentation Portal for every needs.
+- [OpenPipe Manual](https://support.industry.siemens.com/cs/it/en/view/109778823) - Siemens Industry Support Manual for OpenPipe Communication functions understanding.
 
 ## Release History
 
-* 0.0.6
-  * The first proper release.
+- 0.0.12
+  - Update to Node-RED v.1.2.9
+  - Add login user
+  - Add reverse proxy
+- 0.0.6
+  - The first proper release.
 
 ## License
 
@@ -291,4 +352,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contacts
 
-* Davide Maffei - [davide.maffei@siemens.com](davide.maffei@siemens.com)
+- Davide Maffei - [davide.maffei@siemens.com](davide.maffei@siemens.com)
