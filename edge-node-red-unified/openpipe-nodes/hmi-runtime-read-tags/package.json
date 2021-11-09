@@ -1,0 +1,9 @@
+{
+    "version" : "0.0.1",
+    "name" : "node-red-hmi-read-tags",
+    "node-red" : {
+        "nodes": {
+            "hmi-rt-read-tags": "hmi-read-tags.js"
+        }
+    }
+}

@@ -7,5 +7,6 @@ cp $NODERED_SETTINGS $NODERED_FOLDER/$NODERED_SETTINGS
 echo "Custom settings copied."
 
 # START NODE APP
+# IF NODE-RED WILL CRASH IT WILL START IN SAFE MODE
 echo "Starting NodeRED App..."
-npm start --cache $NODERED_FOLDER/.npm -- --userDir $NODERED_FOLDER
+npm start --cache $NODERED_FOLDER/.npm -- --userDir $NODERED_FOLDER || echo "### NODERED STOPPED WITH ERRORS! ### RESTARTING IN SAFE MODE ###" && npm start --safe --cache $NODERED_FOLDER/.npm -- --userDir $NODERED_FOLDER

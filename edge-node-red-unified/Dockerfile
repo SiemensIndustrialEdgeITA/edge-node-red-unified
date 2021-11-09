@@ -7,6 +7,7 @@ USER root
 # install needed packages
 RUN apk add --update-cache \
         cifs-utils \
+        iputils \
     && rm -rf /var/cache/apk/*
 
 # Copy package.json to the WORKDIR so npm builds all

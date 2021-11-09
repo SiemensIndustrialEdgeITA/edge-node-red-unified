@@ -1,81 +1,53 @@
-var net = require('net');
+const readline = require('readline');
+const net = require('net');
+const PIPE_PATH = '/tempcontainer/HmiRuntime';
 
-module.exports = function (RED) {
-  function HmiRuntimeReadAlarmsNode(config) {
+module.exports = function(RED) {
+  function HmiRuntimeSubscribeAlarmsNode(config) {
     RED.nodes.createNode(this, config);
 
-    var node = this;
-
-    // JSON object for tag subscription
-    var subscribe_alarms_object = { Message: "SubscribeAlarm", Params: { SystemNames: ["RUNTIME_1"], Filter: "", LanguageId: 1033 }, ClientCookie: "NodeRedCookieForSubscribeAlarms" }
-
     // JSON object for output message of this node
-    var msg = { payload: {} }
+    const msg = { payload: {} };
 
-    var rt_socket_client;
-    var firstTime = true;
+    const node = this;
 
-    function RTconnectSocket() {
+    const client = net.connect(PIPE_PATH, function() {
+      node.log('Socket connection to /tempcontainer/HmiRuntime successfully established.');
 
-      // create connection to RT unix socket
-      rt_socket_client = net.createConnection("/tempcontainer/HmiRuntime")
+      subscribeAlarms();
 
-      rt_socket_client.on("connect", function () {
-        node.log('Socket connection to /tempcontainer/HmiRuntime successfully established.')
-
-        // connection is established, subscribe for tags now
-        subscribeAlarms();
+      const rl = readline.createInterface({
+        input: client,
+        crlfDelay: Infinity
       });
-      rt_socket_client.on('error', function (error) {
-        if (firstTime) {
-          node.log('Waiting for Socket connection to /tempcontainer/HmiRuntime ...')
-          firstTime = false;
+      // Unified response
+      rl.on('line', (line) => {
+        try
+        {
+          msg.payload = JSON.parse(line);
+          node.send(msg);
         }
-        setTimeout(RTconnectSocket, 1000);
-      })
-      rt_socket_client.on("data", function (data) {
-        processData(data);
+        catch(e)
+        {
+          console.log(e);
+        }
       });
-      rt_socket_client.on("end", function (data) {
-        // connection has been lost (happens when RT shuts down)
-        node.log('Socket connection has been closed. Try to reconnect.')
-        firstTime = true;
-        setTimeout(RTconnectSocket, 1000);
-      });
-    }
-
-    function subscribeAlarms() {
-
-      // At the moment there is no user input; we just subscribe for all alarms
-
-      // convert JSON object to string and add \n
-      var subscribe_cmd = JSON.stringify(subscribe_alarms_object);
-      subscribe_cmd += '\n';
-
-      // subscribe
-      rt_socket_client.write(subscribe_cmd);
-    }
-
-    function processData(data) {
-      // convert input from Socket to JSON object
-      //rt_msg_json = JSON.parse(String.fromCharCode.apply(String, data))
-      var rt_msg_json;
-
-      try {
-        rt_msg_json = JSON.parse(String.fromCharCode.apply(String, data));
-      } catch (e) {
-        console.log(e);
-        rt_msg_json = null;
+      //Unified request
+      function subscribeAlarms() {
+        //Evaluate parameter from node
+        const systemnames = config.systemname.split(' ');
+        const languageIdParse = parseInt(config.languageid, 10);
+        // add all user defined tags to JSON object for subscription
+        const subscribeAlarmsObject = { Message: 'SubscribeAlarm', Params: { SystemNames: systemnames, Filter: config.filter, LanguageId: languageIdParse }, ClientCookie: 'NodeRedCookieForSubscribeAlarms' };
+        // convert JSON object to string and add \n
+        const subscribeAlarmsCmd = JSON.stringify(subscribeAlarmsObject) + '\n';
+        // subscribe
+        client.write(subscribeAlarmsCmd);
       }
-
-      // send whole json object to output
-      msg.payload = rt_msg_json;
-      if (msg.payload) {
-        node.send(msg);
-      }
-    }
-
-    RTconnectSocket();
+    });
+    client.on('end', function() {
+      node.log('Socket connection has been closed. Try to reconnect.');
+    });
   }
-  RED.nodes.registerType("hmi-subscribe-alarms", HmiRuntimeReadAlarmsNode);
-}
+  RED.nodes.registerType('hmi-subscribe-alarms', HmiRuntimeSubscribeAlarmsNode);
+};

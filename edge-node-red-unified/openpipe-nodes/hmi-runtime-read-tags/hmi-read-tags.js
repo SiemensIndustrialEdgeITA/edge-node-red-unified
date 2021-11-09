@@ -3,7 +3,7 @@ const net = require('net');
 const PIPE_PATH = '/tempcontainer/HmiRuntime';
 
 module.exports = function(RED) {
-  function HmiRuntimeSubscribeTagsNode(config) {
+  function HmiRuntimeReadTagsNode(config) {
     RED.nodes.createNode(this, config);
 
     // JSON object for output message of this node
@@ -13,8 +13,6 @@ module.exports = function(RED) {
 
     const client = net.connect(PIPE_PATH, function() {
       node.log('Socket connection to /tempcontainer/HmiRuntime successfully established.');
-
-      subscribeTags();
 
       const rl = readline.createInterface({
         input: client,
@@ -33,19 +31,17 @@ module.exports = function(RED) {
         }
       });
       //Unified request
-      function subscribeTags() {
-        // add all user defined tags to JSON object for subscription
-        const tags = config.tags.split(' ');
-        const subscribeTagsObject = { Message: 'SubscribeTag', Params: { Tags: tags }, ClientCookie: 'NodeRedCookieForSubscribeTags' };
-        // convert JSON object to string and add \n
-        const subscribeTagsCmd = JSON.stringify(subscribeTagsObject) + '\n';
-        // subscribe
-        client.write(subscribeTagsCmd);
-      }
+      node.on('input', function(inputMessage) {
+        const tags = inputMessage.TagNames.split(' ');
+        const readTagsObject = { Message: 'ReadTag', Params: { Tags: tags }, ClientCookie: 'NodeRedCookieForReadTags' };
+        node.log('Read for Tags: ' + tags);
+        const readTagsCmd = JSON.stringify(readTagsObject) + '\n';
+        client.write(readTagsCmd);
+      });
     });
     client.on('end', function() {
       node.log('Socket connection has been closed. Try to reconnect.');
     });
   }
-  RED.nodes.registerType('hmi-subscribe-tags', HmiRuntimeSubscribeTagsNode);
+  RED.nodes.registerType('hmi-read-tags', HmiRuntimeReadTagsNode);
 };

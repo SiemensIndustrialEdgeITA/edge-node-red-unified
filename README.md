@@ -24,7 +24,6 @@ Node-RED Docker Application for UNIFIED COMFORT PANELS with some of most used No
   - [Release History](#release-history)
   - [License](#license)
   - [Contributing](#contributing)
-  - [Contacts](#contacts)
 
 ## Install the App
 
@@ -45,7 +44,7 @@ In order to run this Edge App, the selected Edge System need to satisfy the foll
 
 The **edge-node-red-unified** app can be downloaded in .app format using this secure Google Drive link:
 
-- [edge-node-red-unified_0.0.12.app](https://drive.google.com/file/d/15ZNUkBQPU9AJps4drQRearr5CAEyU3GM/view?usp=sharing)
+- [edge-node-red-unified_0.0.13.app](https://drive.google.com/file/d/1xPnGRFFIac4HN3iM4opUpG5qIC1rrSgs/view?usp=sharing)
 
 ### Prerequisites
 
@@ -107,32 +106,34 @@ The following snippets of ```package.json``` file lists all the extra nodes inst
   ...
   ...
     "dependencies": {
-        "node-red": "1.2.9",
-        "@mindconnect/node-red-contrib-mindconnect": "^3.10.0",
+        "node-red": "2.1.3",
+        "@mindconnect/node-red-contrib-mindconnect": "^3.12.0",
         "node-red-contrib-azureiothubnode": "^0.5.3",
-        "node-red-contrib-influxdb": "^0.5.4",
-        "node-red-contrib-mssql-plus": "^0.6.4",
-        "node-red-node-mysql" : "0.1.1",
+        "node-red-contrib-influxdb": "^0.6.1",
+        "node-red-contrib-mssql-plus": "^0.7.3",
+        "node-red-node-mysql" : "0.3.0",
         "node-red-contrib-postgres-variable": "0.1.4",
         "node-red-contrib-s7": "^3.0.0",
-        "node-red-contrib-opcua": "^0.2.113",
-        "node-red-contrib-modbus": "^5.13.3",
-        "node-red-contrib-cip-ethernet-ip" : "^1.1.2",
+        "node-red-contrib-opcua": "^0.2.244",
+        "node-red-contrib-modbus": "^5.14.1",
+        "node-red-contrib-cip-ethernet-ip" : "^1.1.3",
         "node-red-contrib-string": "^1.0.0",
-        "node-red-contrib-telegrambot": "^8.10.0",
-        "node-red-node-ping": "^0.3.0",
+        "node-red-contrib-telegrambot": "^10.0.9",
+        "node-red-node-ping": "^0.3.1",
         "node-red-contrib-moment": "^4.0.0",
-        "node-red-dashboard": "^2.28.1",
-        "node-red-node-email": "^1.8.3",
-        "node-red-node-openweathermap": "^0.4.0",
-        "node-red-node-random": "^0.3.1",
-        "node-red-contrib-ui-led": "^0.4.9",
-        "node-red-node-ui-table": "^0.3.10",
+        "node-red-dashboard": "^3.1.1",
+        "node-red-node-email": "^1.13.0",
+        "node-red-node-openweathermap": "^0.5.0",
+        "node-red-node-random": "^0.4.0",
+        "node-red-contrib-ui-led": "^0.4.11",
+        "node-red-node-ui-table": "^0.3.11",
         "node-red-node-base64": "0.3.0",
         "node-red-node-msgpack": "1.2.1",
         "node-red-hmi-subscribe-alarms": "file:hmi-runtime-subscribe-alarms",
         "node-red-hmi-subscribe-tags": "file:hmi-runtime-subscribe-tags",
-        "node-red-hmi-write-tags": "file:hmi-runtime-write-tags"
+        "node-red-hmi-write-tags": "file:hmi-runtime-write-tags",
+        "node-red-hmi-read-tags": "file:hmi-runtime-read-tags",
+        "node-red-hmi-read-alarms": "file:hmi-runtime-read-alarms"
     }
 }
 ```
@@ -168,8 +169,8 @@ services:
       context: ./edge-node-red-unified
       dockerfile: Dockerfile
       args:
-        - NODE_RED_VERSION=1.2.9
-    image: edge-node-red-unified:1.2.9
+        - NODE_RED_VERSION=2.1.3
+    image: edge-node-red-unified:2.1.3
     restart: always
     #privileged: true
     cap_add:
@@ -185,25 +186,29 @@ services:
       - proxy-redirect
     volumes:
       - edge-node-red-data:/data/
+      - /tmp/siemens/automation:/tempcontainer/
+      - /media/simatic:/media/simatic:ro,slave
     mem_limit: 768m
 
 volumes:
   edge-node-red-data:
+    name: edge-node-red-data
 
 networks:
   proxy-redirect:
-
-
+    name: proxy-redirect
 ```
 
 The above compose file:
 
 - creates the ```edge-node-red-unified``` service container
-- build our custom Node-RED Docker image using ```./edge-node-red-unified/Dockerfile``` file and passing to it the argument **1.2.9** as the wanted ```NODE_RED_VERSION``` to be installed
+- build our custom Node-RED Docker image using ```./edge-node-red-unified/Dockerfile``` file and passing to it the argument **2.1.3** as the wanted ```NODE_RED_VERSION``` to be installed
 - sets the timezone to ```Europe/Rome```
 - Maps the container port 1880 to the the host port **41880** (for Node-RED Web Interface)
 - Maps the container port 44840 to the the host port **44840** (for extra features like e.g. exposure of an OPCUA Server with ```node-red-contrib-opcua``` node.)
 - persists the ```/data``` dir inside the container to the```edge-node-red-data``` volume in the Host System.
+- map the ```/media/simatic``` folder for External Disks inside the container
+- map the Openpipe socket `/tmp/siemens/automation` in the container folder `/tempcontainer/`
 
 ### ```Dockerfile```
 
@@ -291,39 +296,9 @@ Below you can find the extracted ```docker-compose```  file from the Edge App:
 
 ![publisher-service](docs/publisher-service.PNG)
 
-```yaml
-version: '2.4'
-
-services:
-  edge-node-red-unified:
-    container_name: edge-node-red-unified
-    image: 'edge-node-red-unified:1.2.9'
-    restart: unless-stopped
-    cap_add:
-      - SYS_ADMIN
-      - ALL
-    environment:
-      - TZ=Europe/Rome
-    ports:
-      - '41880:1880'
-      - '44840:44840'
-    networks:
-      - proxy-redirect
-    volumes:
-      - 'edge-node-red-data:/data/'
-      - '/media/simatic:/media/simatic:ro,slave'
-      - '/tmp/siemens/automation:/tempcontainer/'
-    mem_limit: 768m
-
-networks:
-  proxy-redirect: null
-
-volumes:
-  edge-node-red-data: null
-```
-
 ## References
 
+- [SIOS Application Example NodeRED](https://support.industry.siemens.com/cs/ww/en/view/109778780) - This application example is based on the following Siemens Industry Online Support Application example provided by Siemens.
 - [Node-RED Library](https://flows.nodered.org/) - Official Node-RED Collection of Nodes and Example Flows.
 - [Node-RED Docker Image](https://hub.docker.com/r/nodered/node-red) - Official Node-RED Docker Image from Docker Hub.
 - [Node-RED Documentation](https://nodered.org/docs/) - Node-RED Documentation Portal for every needs.
@@ -331,6 +306,11 @@ volumes:
 
 ## Release History
 
+- 0.0.13
+  - Update to Node-RED v.2.1.3
+  - Update OpenPipe nodes to 0421
+  - Update extra nodes
+  - Add iputils to image
 - 0.0.12
   - Update to Node-RED v.1.2.9
   - Add login user
@@ -349,7 +329,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
-
-## Contacts
-
-- Davide Maffei - [davide.maffei@siemens.com](davide.maffei@siemens.com)
