@@ -1,0 +1,32 @@
+<script type="text/javascript">
+    RED.nodes.registerType('hmi-read-alarms', {
+        category: 'OpenPipe',
+        color: '#009999',
+        defaults: {
+            name: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "arrow-in.png",
+        label: function () {
+            return this.name || "hmi-read-alarms";
+        },
+        paletteLabel: "ReadAlarms"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="hmi-read-alarms">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="hmi-read-alarms">
+    <p>A node to read Runtime Alarms on Simatic Unified Comfort Panel</p>
+    <p>The "ReadAlarm" command reads all active alarms once</p>
+    <p>The function is executed as soon as the input paramters are triggered.</p>
+    <p>Input msg.SystemName as string e.g msg.SystemName = RUNTIME_1</p>
+    <p>Input msg.Filter as string e.g msg.Filter = </p>
+    <p>Input msg.LanguageId as string e.g msg.LanguageId = 1033 </p>
+</script>

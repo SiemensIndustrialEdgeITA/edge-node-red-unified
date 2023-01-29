@@ -7,6 +7,7 @@ USER root
 # install needed packages
 RUN apk add --update-cache \
         cifs-utils \
+        iputils \
     && rm -rf /var/cache/apk/*
 
 # Copy package.json to the WORKDIR so npm builds all
@@ -23,10 +24,10 @@ COPY start.sh .
 ########################################################################################
 FROM BASE as BUILD
 
-#USER root
+USER root
 
 # Install devtools for building new nodes on minimal image
-RUN apk add --no-cache --virtual buildtools build-base linux-headers udev python && \
+RUN apk add --no-cache --virtual buildtools build-base linux-headers udev python3 && \
     npm install --unsafe-perm --no-update-notifier --no-fund --only=production &&\
     chmod -R 777 .
 

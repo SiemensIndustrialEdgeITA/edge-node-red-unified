@@ -1,77 +1,62 @@
-var net = require('net');
+const readline = require('readline');
+const net = require('net');
+const PIPE_PATH = '/tempcontainer/HmiRuntime';
 
 module.exports = function(RED) {
-    function HmiRuntimeWriteTagsNode(config) {
-        RED.nodes.createNode(this,config);
+  function HmiRuntimeWriteTagsNode(config) {
+    RED.nodes.createNode(this, config);
 
-        var node = this;
-        var rt_socket_client;
+    const node = this;
 
-        // JSON object for output message of this node
-        var msg = { payload: "" }
+    // JSON object for output message of this node
+    const msg = { payload: {} };
 
-        var connected = false;
-        var firstTime = true;
 
-        function RTconnectSocket(){
+    const client = net.connect(PIPE_PATH, function() {
+      node.log('Client: on connection');
 
-          // create connection to RT unix socket
-          rt_socket_client = net.createConnection("/tempcontainer/HmiRuntime")
-            rt_socket_client.on("connect", function() {
-              node.log('Socket connection to /tempcontainer/HmiRuntime successfully established.')
-              // connection is established, subscribe for tags now
-              connected = true;
-            });
-            rt_socket_client.on('error', function(error) {
-              if (firstTime){
-                node.log('Waiting for Socket connection to /tempcontainer/HmiRuntime ...')
-                firstTime = false;
-              }
-              setTimeout( RTconnectSocket,1000);
-            })
-            rt_socket_client.on("data", function(data) {
-              // This was only needed for "debugging" to see the answer from RT Socket
-              //processData(data);
-            });
-            rt_socket_client.on("end", function(data) {
-              // connection has been lost (happens when RT shuts down)
-              node.log('Socket connection has been closed. Try to reconnect.')
-              firstTime = true;
-              setTimeout( RTconnectSocket,1000);
-            });
-
+      const rl = readline.createInterface({
+        input: client,
+        crlfDelay: Infinity
+      });
+      // Unified response
+      rl.on('line', (line) => {
+        try
+        {
+          msg.payload = JSON.parse(line);
+          node.send(msg);
         }
-
-        node.on('input', function(msg) {
-
-          if (connected)
-          {
-
-            var write_tags_object = {Message:"WriteTag",Params:{Tags:[]},ClientCookie:"myRequest2"};
-
-            // iterate thru all objects in payload of message and add them to write command
-            msg.payload.forEach(function (item, index) {
-              write_tags_object.Params.Tags.push(item);
-            });
-
-            var write_tags_cmd = JSON.stringify(write_tags_object);
-            write_tags_cmd += '\n';
-
-            rt_socket_client.write(write_tags_cmd);
-
+        catch(e)
+        {
+          console.log(e);
+        }
+      });
+      // Unified request
+      node.on('input', function(inputMessage) {
+        // Check input and format to handover
+        const tagNames = inputMessage.TagNames.split(' ');
+        const tagValues = [];
+        inputMessage.TagValues.split('"').forEach((value, i) => {
+          if (i % 2 === 1) {
+            tagValues.push(value);
+          } else if (value) {
+            value.trim().split(' ').forEach(splitValue => tagValues.push(parseFloat(splitValue)));
           }
         });
 
-        /* This was only needed for "debugging" to see the answer from RT Socket
-            TODO: maybe there is a better way in Node where we can output such messages
-        function processData(data){
-          var msg_out = { payload: {} }
-          msg_out.payload = JSON.parse(String.fromCharCode.apply(String, data));
-          node.send(msg_out);
-        }
-        */
+        const tags = tagValues.map((value, index) => { return { Name: tagNames[index], Value: value }; });
 
-        RTconnectSocket();
-    }
-    RED.nodes.registerType("hmi-write-tags",HmiRuntimeWriteTagsNode);
-}
+        const writeTagsObject = { Message: 'WriteTag', Params: { Tags: tags }, ClientCookie: 'NodeRedCookieForWriteTags' };
+        // convert JSON object to string and add \n
+        const writeTagsCmd = JSON.stringify(writeTagsObject) + '\n';
+        // write
+        client.write(writeTagsCmd);
+      });
+    });
+
+    client.on('end', function() {
+      node.log('on end');
+    });
+  }
+  RED.nodes.registerType('hmi-write-tags', HmiRuntimeWriteTagsNode);
+};

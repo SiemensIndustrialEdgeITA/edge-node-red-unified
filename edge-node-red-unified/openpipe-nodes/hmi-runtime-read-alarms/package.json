@@ -1,0 +1,9 @@
+{
+    "version" : "0.0.1",
+    "name" : "node-red-hmi-read-alarms",
+    "node-red" : {
+        "nodes": {
+            "hmi-subscribe-alarms": "hmi-read-alarms.js"
+        }
+    }
+}

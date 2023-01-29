@@ -7,8 +7,8 @@ services:
       context: ./edge-node-red-unified
       dockerfile: Dockerfile
       args:
-        - NODE_RED_VERSION=1.2.9
-    image: edge-node-red-unified:1.2.9
+        - NODE_RED_VERSION=3.0.2
+    image: edge-node-red-unified:3.0.2
     restart: always
     #privileged: true
     cap_add:
@@ -24,10 +24,14 @@ services:
       - proxy-redirect
     volumes:
       - edge-node-red-data:/data/
+      - /tmp/siemens/automation:/tempcontainer/
+      - /media/simatic:/media/simatic:ro,slave
     mem_limit: 768m
 
 volumes:
   edge-node-red-data:
+    name: edge-node-red-data
 
 networks:
   proxy-redirect:
+    name: proxy-redirect

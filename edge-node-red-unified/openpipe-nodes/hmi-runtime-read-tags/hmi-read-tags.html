@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    RED.nodes.registerType('hmi-read-tags', {
+        category: 'OpenPipe',
+        color: '#009999',
+        defaults: {
+            name: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "arrow-in.png",
+        label: function () {
+            return this.name || "hmi-read-tags";
+        },
+        paletteLabel: "ReadTags"
+    });
+</script>
+
+<script type="text/x-red" data-template-name="hmi-read-tags">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="hmi-read-tags">
+    <p>A node to read Runtime Tags on Simatic Unified Comfort Panel.</p>
+    <p>Define a tag or several tags to read</p>
+    <p>Input msg.TagNames as string e.g msg.TagNames = tag_name1 tag_name2 tag_name3</p>
+    <p>The "ReadTag" command reads one or more tags once. The following properties are monitored: Tag value, Quality, Quality code and Time stamp.</p>
+
+</script>

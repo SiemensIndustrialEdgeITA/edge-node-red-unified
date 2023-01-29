@@ -1,16 +1,16 @@
 <script type="text/javascript">
-    RED.nodes.registerType('hmi-subscribe-tags',{
+    RED.nodes.registerType('hmi-subscribe-tags', {
         category: 'OpenPipe',
         color: '#009999',
         defaults: {
-            nodename: {value:""},
-            tags: {value:""}
+            name: { value: "" },
+            tags: { value: "" }
         },
-        inputs:0,
-        outputs:1,
+        inputs: 0,
+        outputs: 1,
         icon: "arrow-in.png",
-        label: function() {
-            return this.name||"hmi-subscribe-tags";
+        label: function () {
+            return this.name || "hmi-subscribe-tags";
         },
         paletteLabel: "SubscribeTags"
     });

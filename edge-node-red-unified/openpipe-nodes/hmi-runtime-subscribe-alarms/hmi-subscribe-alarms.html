@@ -1,15 +1,18 @@
 <script type="text/javascript">
-    RED.nodes.registerType('hmi-subscribe-alarms',{
+    RED.nodes.registerType('hmi-subscribe-alarms', {
         category: 'OpenPipe',
         color: '#009999',
         defaults: {
-            nodename: {value:""}
+            name: { value: "" },
+            filter: { value: "" },
+            languageid: { value: "" },
+            systemname: { value: "" }
         },
-        inputs:0,
-        outputs:1,
+        inputs: 0,
+        outputs: 1,
         icon: "arrow-in.png",
-        label: function() {
-            return this.name||"hmi-subscribe-alarms";
+        label: function () {
+            return this.name || "hmi-subscribe-alarms";
         },
         paletteLabel: "SubscribeAlarms"
     });
@@ -19,7 +22,18 @@
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
-
+    </div>
+    <div class="form-row">
+        <label for="node-input-filter"><i class="icon-tag"></i> Filter</label>
+        <input type="text" id="node-input-filter" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-languageid"><i class="icon-tag"></i> LanguageID</label>
+        <input type="text" id="node-input-languageid" placeholder="1033">
+    </div>
+    <div class="form-row">
+        <label for="node-input-systemname"><i class="icon-tag"></i> SystemName</label>
+        <input type="text" id="node-input-systemname" placeholder="RUNTIME_1">
     </div>
 
 </script>
